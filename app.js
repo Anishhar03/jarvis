@@ -6,32 +6,32 @@ const machine = document.querySelector(".machine");
 // const msgs = document.querySelector(".messages");
 // whether the recognition is stopiing on my command or automatically
 let stopingR = false;
-// jarvis's commands
-let jarviscoms = [];
-jarviscoms.push("hi friday");
-jarviscoms.push("what are your commands");
-jarviscoms.push("close this - to close opened popups");
-jarviscoms.push(
+// friday's commands
+let fridayComs = [];
+fridayComs.push("hi friday");
+fridayComs.push("what are your commands");
+fridayComs.push("close this - to close opened popups");
+fridayComs.push(
   "change my information - information regarding your acoounts and you"
 );
-jarviscoms.push("whats the weather or temperature");
-jarviscoms.push("show the full weather report");
-jarviscoms.push("are you there - to check fridays presence");
-jarviscoms.push("shut down - stop voice recognition");
-jarviscoms.push("open google");
-jarviscoms.push('search for "your keywords" - to search on google ');
-jarviscoms.push("open whatsapp");
-jarviscoms.push("open youtube");
-jarviscoms.push('play "your keywords" - to search on youtube ');
-jarviscoms.push("close this youtube tab - to close opened youtube tab");
-jarviscoms.push("open firebase");
-jarviscoms.push("open netlify");
-jarviscoms.push("open twitter");
-jarviscoms.push("open my twitter profile");
-jarviscoms.push("open instagram");
-jarviscoms.push("open my instagram profile");
-jarviscoms.push("open github");
-jarviscoms.push("open my github profile");
+fridayComs.push("whats the weather or temperature");
+fridayComs.push("show the full weather report");
+fridayComs.push("are you there - to check fridays presence");
+fridayComs.push("shut down - stop voice recognition");
+fridayComs.push("open google");
+fridayComs.push('search for "your keywords" - to search on google ');
+fridayComs.push("open whatsapp");
+fridayComs.push("open youtube");
+fridayComs.push('play "your keywords" - to search on youtube ');
+fridayComs.push("close this youtube tab - to close opened youtube tab");
+fridayComs.push("open firebase");
+fridayComs.push("open netlify");
+fridayComs.push("open twitter");
+fridayComs.push("open my twitter profile");
+fridayComs.push("open instagram");
+fridayComs.push("open my instagram profile");
+fridayComs.push("open github");
+fridayComs.push("open my github profile");
 
 // youtube window
 let ytbWindow;
@@ -72,8 +72,7 @@ window.onload = () => {
     }, 200);
   });
 
-  jarviscoms
-.forEach((e) => {
+  fridayComs.forEach((e) => {
     document.querySelector(".commands").innerHTML += `<p>#${e}</p><br />`;
   });
   // battery
@@ -320,7 +319,12 @@ recognition.onresult = function (event) {
       }
       document.querySelector(".commands").style.display = "block";
     }
-    
+    // jarvis bio
+    if (transcript.includes("Tell about yourself")) {
+      readOut(
+        "sir, i am a jarvis, a voice asistant made for browsers using javascript by one of the Enthusiastic dev on the planet. I can do anything which can be done from a browser."
+      );
+    }
   
     // close popups
     if (transcript.includes("close this")) {
@@ -367,15 +371,11 @@ recognition.onresult = function (event) {
     }
     // close voice recognition
     if (transcript.includes("shut down")) {
-        readOut("Ok sir, I will take a nap");
-        
-        // Ensure recognition is properly stopped
-        recognition.stop();
-        
-        // Optionally clear other intervals or tasks if needed
-        stopingR = true; // Ensure this flag is used properly elsewhere in the code
-      }
-      
+      readOut("Ok sir i will take a nap");
+      stopingR = true;
+      recognition.stop();
+    }
+  
   // whatsapp
     if (transcript.includes("open whatsapp")) {
       readOut("opening whatsapp");
@@ -395,9 +395,7 @@ recognition.onresult = function (event) {
       windowsB.push(a)
     }
   
-  if(transcript.includes("who created you")){
-    readOut("i was created by anish")
-  }
+  
     // firebase
   
     if (transcript.includes("open fire base") && transcript.includes("account")) {
@@ -468,10 +466,7 @@ recognition.onresult = function (event) {
       );
       windowsB.push(a)
     }
-   // "Tell about yourself" command
-   if (transcript.includes("tell about yourself")) {
-    readOut("sir, i am jarvis, a voice assistant made for browsers using javascript by anish. I can do anything that can be done from a browser.");
-  }
+  
   
     // instagram
     if (transcript.includes("open instagram")) {
