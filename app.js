@@ -1,5 +1,3 @@
-// Enhanced JARVIS Voice Assistant
-
 // vars and elements
 const turn_on = document.querySelector("#turn_on");
 const jarvis_intro = document.querySelector("#j_intro");
@@ -14,17 +12,17 @@ fridayComs.push("hi friday");
 fridayComs.push("what are your commands");
 fridayComs.push("close this - to close opened popups");
 fridayComs.push(
-  "change my information - information regarding your accounts and you"
+  "change my information - information regarding your acoounts and you"
 );
-fridayComs.push("what's the weather or temperature");
+fridayComs.push("whats the weather or temperature");
 fridayComs.push("show the full weather report");
 fridayComs.push("are you there - to check fridays presence");
 fridayComs.push("shut down - stop voice recognition");
 fridayComs.push("open google");
-fridayComs.push('search for "your keywords" - to search on google');
+fridayComs.push('search for "your keywords" - to search on google ');
 fridayComs.push("open whatsapp");
 fridayComs.push("open youtube");
-fridayComs.push('play "your keywords" - to search on youtube');
+fridayComs.push('play "your keywords" - to search on youtube ');
 fridayComs.push("close this youtube tab - to close opened youtube tab");
 fridayComs.push("open firebase");
 fridayComs.push("open netlify");
@@ -34,16 +32,17 @@ fridayComs.push("open instagram");
 fridayComs.push("open my instagram profile");
 fridayComs.push("open github");
 fridayComs.push("open my github profile");
-fridayComs.push("switch to hindi - change language to Hindi");
-fridayComs.push("switch to english - change language to English");
-fridayComs.push("top headlines - get today's top news");
-fridayComs.push("news regarding [topic] - get news about specific topic");
-fridayComs.push("tell me a joke - hear a random joke");
-fridayComs.push("set a reminder - set a reminder with time and message");
-fridayComs.push("what can you do - list all capabilities");
 
 // youtube window
 let ytbWindow;
+
+// create a new message
+// function createMsg(who, msg) {
+//   let newmsg = document.createElement("p");
+//   newmsg.innerText = msg;
+//   newmsg.setAttribute("class", who);
+//   msgs.appendChild(newmsg);
+// }
 
 // show a warn to check for all the commands
 console.warn('*to check for the commands speak "what are your commands"');
@@ -56,18 +55,14 @@ let secs = date.getSeconds();
 
 // this is what friday tells about weather
 let weatherStatement = "";
-let charge, chargeStatus, connectivity, currentTime;
-chargeStatus = "unplugged";
-
-// News API key - in a real project, this should be secured
-const NEWS_API_KEY = "b0712dc2e5814a1bb531e6f096b3d7d3";
-
-// Reminders array
-let reminders = [];
+let charge,chargeStatus, connectivity, currentTime
+chargeStatus = "unplugged"
 
 window.onload = () => {
+  // turn_on.play();
   turn_on.addEventListener("ended", () => {
     setTimeout(() => {
+      // autoJarvis();
       readOut("Ready to go sir");
       if (localStorage.getItem("jarvis_setup") === null) {
         readOut(
@@ -80,136 +75,141 @@ window.onload = () => {
   fridayComs.forEach((e) => {
     document.querySelector(".commands").innerHTML += `<p>#${e}</p><br />`;
   });
-  
-  // Initialize battery status
-  initBattery();
-  
-  // Initialize internet connectivity
-  initConnectivity();
-  
-  // Initialize time display
-  updateTime();
-  setInterval(updateTime, 60000);
-  
-  // Load reminders from localStorage
-  loadReminders();
-  
-  // Check for scheduled reminders
-  setInterval(checkReminders, 60000);
-};
-
-// Initialize battery monitoring
-function initBattery() {
+  // battery
   let batteryPromise = navigator.getBattery();
   batteryPromise.then(batteryCallback);
-  
+
+  // internet connectivity
+
+    if(navigator.onLine){
+      document.querySelector("#internet").textContent = "online"
+      connectivity = "online"
+    } else {
+      document.querySelector("#internet").textContent = "offline"
+      connectivity = "offline"
+    }
+
+  setInterval(() => {
+    if(navigator.onLine){
+      document.querySelector("#internet").textContent = "online"
+      connectivity = "online"
+    } else {
+      document.querySelector("#internet").textContent = "offline"
+      connectivity = "offline"
+    }
+  }, 60000);
+
   function batteryCallback(batteryObject) {
     printBatteryStatus(batteryObject);
-    batteryObject.addEventListener("chargingchange", () => {
+    setInterval(() => {
       printBatteryStatus(batteryObject);
-    });
-    batteryObject.addEventListener("levelchange", () => {
-      printBatteryStatus(batteryObject);
-    });
+    }, 5000);
   }
-  
   function printBatteryStatus(batteryObject) {
-    charge = (batteryObject.level * 100).toFixed(2);
-    document.querySelector("#battery").textContent = `${charge}%`;
-    
+    document.querySelector("#battery").textContent = `${
+      (batteryObject.level * 100).toFixed(2)
+    }%`;
+    charge = batteryObject.level * 100
     if (batteryObject.charging === true) {
       document.querySelector(".battery").style.width = "200px";
-      document.querySelector("#battery").textContent = `${charge}% Charging`;
-      chargeStatus = "plugged in";
-      
-      // Notify when fully charged
-      if (batteryObject.level >= 0.98) {
-        readOut("Sir, your device is fully charged");
-      }
-    } else {
-      chargeStatus = "unplugged";
-      
-      // Low battery warning
-      if (batteryObject.level <= 0.2) {
-        readOut("Sir, your battery is running low. Please connect the charger");
-      }
+      document.querySelector("#battery").textContent = `${
+        (batteryObject.level * 100).toFixed(2)
+      }% Charging`;
+      chargeStatus = "plugged in"
     }
   }
+
+  // timer
+  // setInterval(() => {
+  //   let date = new Date();
+  //   let hrs = date.getHours();
+  //   let mins = date.getMinutes();
+  //   let secs = date.getSeconds();
+  //   time.textContent = `${hrs} : ${mins} : ${secs}`;
+  // }, 1000);
+};
+
+function formatAMPM(date) {
+  var hours = date.getHours();
+  var minutes = date.getMinutes();
+  var ampm = hours >= 12 ? 'pm' : 'am';
+  hours = hours % 12;
+  hours = hours ? hours : 12; // the hour '0' should be '12'
+  minutes = minutes < 10 ? '0'+minutes : minutes;
+  var strTime = hours + ':' + minutes + ' ' + ampm;
+  currentTime = strTime
+  time.textContent = strTime
 }
 
-// Initialize internet connectivity monitoring
-function initConnectivity() {
-  const updateConnectivity = () => {
-    if (navigator.onLine) {
-      document.querySelector("#internet").textContent = "online";
-      connectivity = "online";
-    } else {
-      document.querySelector("#internet").textContent = "offline";
-      connectivity = "offline";
-      readOut("Sir, you are currently offline");
-    }
-  };
-  
-  updateConnectivity();
-  window.addEventListener("online", updateConnectivity);
-  window.addEventListener("offline", updateConnectivity);
+formatAMPM(date)
+setInterval(() => {
+  formatAMPM(date)
+}, 60000);
+
+// auto friday
+
+function autoJarvis() {
+  setTimeout(() => {
+    recognition.start();
+  }, 1000);
 }
 
-// Update time display
-function updateTime() {
-  const date = new Date();
-  const options = { 
-    hour: '2-digit', 
-    minute: '2-digit',
-    hour12: true 
-  };
-  currentTime = date.toLocaleTimeString('en-US', options);
-  time.textContent = currentTime;
-}
+// 
+// start jarvis with btn
+document.querySelector("#start_jarvis_btn").addEventListener("click", () => {
+  recognition.start();
+})
 
-// Enhanced weather functionality
+
+document.querySelector("#stop_jarvis_btn").addEventListener("click", () => {
+  stopingR = true;
+  recognition.stop();
+})
+
+// show waether
 function weather(location) {
   const weatherCont = document.querySelector(".temp").querySelectorAll("*");
 
-  let url = `https://api.openweathermap.org/data/2.5/weather?q=${location}&appid=48ddfe8c9cf29f95b7d0e54d6e171008&units=metric`;
-  
-  fetch(url)
-    .then(response => {
-      if (!response.ok) {
-        throw new Error("Weather data not found");
-      }
-      return response.json();
-    })
-    .then(data => {
-      weatherCont[0].textContent = `Location: ${data.name}`;
-      weatherCont[1].textContent = `Country: ${data.sys.country}`;
-      weatherCont[2].textContent = `Weather: ${data.weather[0].main}`;
-      weatherCont[3].textContent = `Description: ${data.weather[0].description}`;
+  let url = `https://api.openweathermap.org/data/2.5/weather?q=${location}&appid=48ddfe8c9cf29f95b7d0e54d6e171008`;
+  const xhr = new XMLHttpRequest();
+  xhr.open("GET", url, true);
+  xhr.onload = function () {
+    if (this.status === 200) {
+      let data = JSON.parse(this.responseText);
+      weatherCont[0].textContent = `Location : ${data.name}`;
+      weatherCont[1].textContent = `Country : ${data.sys.country}`;
+      weatherCont[2].textContent = `Weather type : ${data.weather[0].main}`;
+      weatherCont[3].textContent = `Weather description : ${data.weather[0].description}`;
       weatherCont[4].src = `http://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`;
-      weatherCont[5].textContent = `Temperature: ${data.main.temp}°C`;
-      weatherCont[6].textContent = `Feels like: ${data.main.feels_like}°C`;
-      weatherCont[7].textContent = `Min: ${data.main.temp_min}°C`;
-      weatherCont[8].textContent = `Max: ${data.main.temp_max}°C`;
-      
-      weatherStatement = `Sir, the weather in ${data.name} is ${data.weather[0].description} with a temperature of ${data.main.temp} degrees Celsius. It feels like ${data.main.feels_like} degrees.`;
-      
-      // Add weather alerts
-      if (data.weather[0].main === "Rain") {
-        readOut("Sir, it's going to rain today. You might want to carry an umbrella.");
-      } else if (data.main.temp > 30) {
-        readOut("Sir, it's quite hot today. Stay hydrated.");
-      } else if (data.main.temp < 10) {
-        readOut("Sir, it's quite cold today. You might want to wear something warm.");
-      }
-    })
-    .catch(error => {
+      weatherCont[5].textContent = `Original Temperature : ${ktc(
+        data.main.temp
+      )}`;
+      weatherCont[6].textContent = `feels like ${ktc(data.main.feels_like)}`;
+      weatherCont[7].textContent = `Min temperature ${ktc(data.main.temp_min)}`;
+      weatherCont[8].textContent = `Max temperature ${ktc(data.main.temp_max)}`;
+      weatherStatement = `sir the weather in ${data.name} is ${
+        data.weather[0].description
+      } and the temperature feels like ${ktc(data.main.feels_like)}`;
+    } else {
       weatherCont[0].textContent = "Weather Info Not Found";
-      console.error("Weather API error:", error);
-      readOut("Sir, I couldn't fetch the weather information. Please check your internet connection or try again later.");
-    });
+    }
+  };
+
+  xhr.send();
+}
+
+// convert kelvin to celcius
+function ktc(k) {
+  k = k - 273.15;
+  return k.toFixed(2);
+}
+
+if (localStorage.getItem("jarvis_setup") !== null) {
+  weather(JSON.parse(localStorage.getItem("jarvis_setup")).location);
 }
 
 // friday information setup
+
 const setup = document.querySelector(".jarvis_setup");
 setup.style.display = "none";
 if (localStorage.getItem("jarvis_setup") === null) {
@@ -240,23 +240,36 @@ function userInfo() {
     localStorage.setItem("jarvis_setup", JSON.stringify(setupInfo));
     setup.style.display = "none";
     weather(JSON.parse(localStorage.getItem("jarvis_setup")).location);
-    readOut("Thank you sir. Your information has been saved successfully.");
   }
 }
 
 // speech recognition
-const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+// speech lang
+
+let speech_lang = "hi-IN" // "hi-IN" | "en-US"
+if(localStorage.getItem("lang") === null){
+  localStorage.setItem("lang", "en-US")
+}
+
+
+const SpeechRecognition =
+  window.SpeechRecognition || window.webkitSpeechRecognition;
+
 const recognition = new SpeechRecognition();
 recognition.continuous = true;
-recognition.lang = localStorage.getItem("lang") || "en-US";
+recognition.lang = localStorage.getItem("lang")
+
+var synth = window.speechSynthesis;
+// const speech = new SpeechSynthesisUtterance();
 
 recognition.onstart = function () {
   console.log("voice recognition activated");
-  document.querySelector("#stop_jarvis_btn").style.display = "flex";
+  document.querySelector("#stop_jarvis_btn").style.display = "flex"
 };
 
-// array of opened windows
-let windowsB = [];
+// arr of window
+let windowsB = []
 
 recognition.onresult = function (event) {
   let current = event.resultIndex;
@@ -264,288 +277,295 @@ recognition.onresult = function (event) {
   transcript = transcript.toLowerCase();
   let userData = localStorage.getItem("jarvis_setup");
   console.log(transcript);
-  
-  // Process commands based on language
-  if (localStorage.getItem("lang") === "en-US") {
-    processEnglishCommands(transcript, userData);
-  } else if (localStorage.getItem("lang") === "hi-IN") {
-    processHindiCommands(transcript);
-  }
-};
+  // createMsg("usermsg", transcript);
+  // commands
+  // hi - hello
 
-function processEnglishCommands(transcript, userData) {
-  // Greetings
-  if (transcript.includes("hi jarvis") || transcript.includes("hello jarvis")) {
-    readOut("Hello sir, how can I assist you today?");
-  }
-  
-  // System status commands
-  if (transcript.includes("what's the current charge") || transcript.includes("battery status")) {
-    readOut(`The current charge is ${charge} percent and the device is ${chargeStatus}`);
-  }
-  
-  if (transcript.includes("what's the charging status")) {
-    readOut(`The device is currently ${chargeStatus}`);
-  }
-  
-  if (transcript.includes("current time") || transcript.includes("what time is it")) {
-    readOut(`The current time is ${currentTime}`);
-  }
-  
-  if (transcript.includes("connection status") || transcript.includes("internet status")) {
-    readOut(`You are currently ${connectivity}`);
-  }
-  
-  // Command list
-  if (transcript.includes("what are your commands") || transcript.includes("what can you do")) {
-    readOut("Sir, here's the list of commands I can follow. You can also ask me 'what can you do' for a summary.");
-    if (window.innerWidth <= 400) {
-      window.resizeTo(screen.width, screen.height);
+  if(localStorage.getItem("lang") === "en-US"){
+    if (transcript.includes("hi jarvis")) {
+      readOut("hello sir");
     }
-    document.querySelector(".commands").style.display = "block";
-  }
-  
-  // Self introduction
-  if (transcript.includes("tell about yourself") || transcript.includes("who are you")) {
-    readOut(
-      "Sir, I am JARVIS, an advanced voice assistant designed for browsers using modern web technologies. " +
-      "I can perform various tasks including web searches, opening applications, providing weather updates, " +
-      "reading news headlines, setting reminders, and much more. How may I assist you today?"
-    );
-  }
-  
-  // Close popups
-  if (transcript.includes("close this")) {
-    readOut("Closing the tab sir");
-    document.querySelector(".commands").style.display = "none";
-    if (window.innerWidth >= 401) {
-      window.resizeTo(250, 250);
+
+    // change lang command
+
+    if(transcript.includes("switch to hindi")){
+      readOut("switching to hindi")
+      speech_lang = "hi-IN"
+      localStorage.setItem("lang", "hi-IN")
+      stopingR = true
+      recognition.stop()
+      location.reload()
+      readOutHindi("मैं तैयार हूँ, सर")
     }
-    setup.style.display = "none";
-  }
   
-  // User information management
-  if (transcript.includes("change my information") || transcript.includes("update my profile")) {
-    readOut("Opening the information tab sir");
-    localStorage.clear();
+    // some casual commands
+    if (transcript.includes("what's the current charge")) {
+      readOut(`the current charge is ${charge}`);
+    }
+    if (transcript.includes("what's the charging status")) {
+      readOut(`the current charging status is ${chargeStatus}`);
+    }
+    if (transcript.includes("current time")) {
+      readOut(currentTime);
+    }
+    if (transcript.includes("connection status")) {
+      readOut(`you are ${connectivity} sir`);
+    }
+    // jarvis commands
+    if (transcript.includes("what are your commands")) {
+      readOut("sir here's the list of commands i can follow");
+      if(window.innerWidth <= 400 ){
+        window.resizeTo(screen.width,screen.height)
+      }
+      document.querySelector(".commands").style.display = "block";
+    }
+    // jarvis bio
+    if (transcript.includes("Tell about yourself")) {
+      readOut(
+        "sir, i am a jarvis, a voice asistant made for browsers using javascript by one of the Enthusiastic dev on the planet. I can do anything which can be done from a browser."
+      );
+    }
+  
+    // close popups
+    if (transcript.includes("close this")) {
+      readOut("closing the tab sir");
+      document.querySelector(".commands").style.display = "none";
+      if(window.innerWidth >= 401 ){
+        window.resizeTo(250,250)
+      }
+      setup.style.display = "none";
+    }
+  
+    // info change
+    if (transcript.includes("change my information")) {
+      readOut("Opening the information tab sir");
+      localStorage.clear();
+      
+      if(window.innerWidth <= 400 ){
+        window.resizeTo(screen.width,screen.height)
+      }
+      setup.style.display = "flex";
+      setup.querySelector("button").addEventListener("click", userInfo);
+    }
+  
     
-    if (window.innerWidth <= 400) {
-      window.resizeTo(screen.width, screen.height);
-    }
-    setup.style.display = "flex";
-    setup.querySelector("button").addEventListener("click", userInfo);
-  }
-  
-  // Weather queries
-  if (transcript.includes("what's the temperature") || transcript.includes("how's the weather")) {
-    if (weatherStatement) {
+    // weather report
+    if (
+      transcript.includes("what's the temperature")
+    ) {
       readOut(weatherStatement);
-    } else {
-      readOut("Sir, I don't have weather information yet. Please set your location first.");
     }
-  }
   
-  if (transcript.includes("full weather report")) {
-    if (localStorage.getItem("jarvis_setup")) {
-      readOut("Opening the weather report sir");
+    if (transcript.includes("full weather report")) {
+      readOut("opening the weather report sir");
       let a = window.open(
         `https://www.google.com/search?q=weather+in+${
           JSON.parse(localStorage.getItem("jarvis_setup")).location
         }`
       );
-      windowsB.push(a);
-    } else {
-      readOut("Sir, I need your location information first to show weather details.");
+      windowsB.push(a)
     }
-  }
-  
-  // Availability check
-  if (transcript.includes("are you there") || transcript.includes("jarvis you there")) {
-    readOut("Yes sir, I'm here and ready to assist you");
-  }
-  
-  // Shutdown command
-  if (transcript.includes("shut down") || transcript.includes("go to sleep")) {
-    readOut("Okay sir, I'm going to sleep now. Just say 'hi jarvis' when you need me.");
-    stopingR = true;
-    recognition.stop();
-  }
-  
-  // Language switching
-  if (transcript.includes("switch to hindi")) {
-    readOut("Switching to Hindi language");
-    localStorage.setItem("lang", "hi-IN");
-    stopingR = true;
-    recognition.stop();
-    location.reload();
-  }
-  
-  // Application opening commands
-  const appCommands = {
-    "open whatsapp": "https://web.whatsapp.com/",
-    "open netlify": "https://app.netlify.com/",
-    "open spotify": "https://open.spotify.com/",
-    "open google": "https://www.google.com/",
-    "open youtube": "https://www.youtube.com/",
-    "open instagram": "https://www.instagram.com",
-    "open twitter": "https://twitter.com/",
-    "open github": "https://github.com/",
-    "open calendar": "https://calendar.google.com/",
-    "open firebase": "https://console.firebase.google.com/"
-  };
-  
-  for (const [command, url] of Object.entries(appCommands)) {
-    if (transcript.includes(command)) {
-      readOut(`Opening ${command.split(' ')[1]} sir`);
-      let a = window.open(url);
-      windowsB.push(a);
-      break;
+    // availability check
+    if (transcript.includes("are you there")) {
+      readOut("yes sir");
     }
-  }
-  
-  // Special case for firebase with account number
-  if (transcript.includes("open fire base") && transcript.includes("account")) {
-    readOut("Opening firebase console");
-    let accId = transcript.split("").pop();
-    let a = window.open(`https://console.firebase.google.com/u/${accId}/`);
-    windowsB.push(a);
-  }
-  
-  // Search functionality
-  if (transcript.includes("search for")) {
-    let query = transcript.replace("search for", "").trim();
-    if (query) {
-      readOut(`Searching for ${query}`);
-      let searchUrl = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
-      let a = window.open(searchUrl);
-      windowsB.push(a);
-    } else {
-      readOut("Sir, what would you like me to search for?");
+    // close voice recognition
+    if (transcript.includes("shut down")) {
+      readOut("Ok sir i will take a nap");
+      stopingR = true;
+      recognition.stop();
     }
-  }
   
-  // YouTube search
-  if (transcript.includes("play")) {
-    let query = transcript.replace("play", "").trim();
-    if (query) {
-      readOut(`Searching YouTube for ${query}`);
-      let searchUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(query)}`;
-      let a = window.open(searchUrl);
-      windowsB.push(a);
-    } else {
-      readOut("Sir, what would you like me to play on YouTube?");
+  // whatsapp
+    if (transcript.includes("open whatsapp")) {
+      readOut("opening whatsapp");
+      let a = window.open("https://web.whatsapp.com/");
+      windowsB.push(a)
     }
-  }
-  
-  // Social media profiles
-  if (transcript.includes("open my instagram profile")) {
-    if (userData && JSON.parse(userData).instagram) {
-      readOut("Opening your Instagram profile");
-      let a = window.open(`https://www.instagram.com/${JSON.parse(userData).instagram}/`);
-      windowsB.push(a);
-    } else {
-      readOut("Sir, I don't have your Instagram information. Please update your profile first.");
+  // netlify
+    if (transcript.includes("open netlify")) {
+      readOut("opening netlify");
+      let a = window.open("https://app.netlify.com/");
+      windowsB.push(a)
     }
-  }
-  
-  if (transcript.includes("open my twitter profile")) {
-    if (userData && JSON.parse(userData).twitter) {
-      readOut("Opening your Twitter profile");
-      let a = window.open(`https://twitter.com/${JSON.parse(userData).twitter}`);
-      windowsB.push(a);
-    } else {
-      readOut("Sir, I don't have your Twitter information. Please update your profile first.");
+  // spotify
+    if (transcript.includes("open spotify")) {
+      readOut("opening spotify");
+      let a = window.open("https://open.spotify.com/");
+      windowsB.push(a)
     }
-  }
   
-  if (transcript.includes("open my github profile")) {
-    if (userData && JSON.parse(userData).github) {
-      readOut("Opening your GitHub profile");
+  
+    // firebase
+  
+    if (transcript.includes("open fire base") && transcript.includes("account")) {
+      readOut("opening firebase console");
+      let accId = transcript;
+      accId = accId.split("");
+      accId.pop();
+      accId = accId[accId.length - 1];
+      console.log(`accId: ${accId}`);
+      // https://console.firebase.google.com/u/0/
+      let a = window.open(`https://console.firebase.google.com/u/${accId}/`);
+      windowsB.push(a)
+    }
+  
+    // canva
+  
+    if (transcript.includes("open my canva designs")) {
+      readOut("opening canva designs");
+      window.open("https://www.canva.com/folder/all-designs");
+    }
+  
+    if (transcript.includes("open canva") || transcript.includes("open camera")) {
+      readOut("opening canva");
+      window.open("https://www.google.com/");
+    }
+  
+    // userdata access commands
+  
+    if (transcript.includes("what's my name")) {
+      readOut(`Sir, I know that you are ${JSON.parse(userData).name}`);
+    }
+    if (transcript.includes("what's my bio")) {
+      readOut(`Sir, I know that you are ${JSON.parse(userData).bio}`);
+    }
+  
+    // google
+  
+    if (transcript.includes("open google")) {
+      readOut("opening google");
+      let a = window.open("https://www.google.com/");
+      windowsB.push(a)
+    }
+  
+    if (transcript.includes("search for")) {
+      readOut("here's your result");
+      let input = transcript.split("");
+      input.splice(0, 11);
+      input.pop();
+      input = input.join("").split(" ").join("+");
+      let a = window.open(`https://www.google.com/search?q=${input}`);
+      windowsB.push(a)
+    }
+  
+    // youtube
+    if (transcript.includes("open youtube")) {
+      readOut("opening youtube sir");
+      let a = window.open("https://www.youtube.com/");
+      windowsB.push(a)
+    }
+  
+    if (transcript.includes("play")) {
+      let playStr = transcript.split("");
+      playStr.splice(0, 5);
+      let videoName = playStr.join("");
+      playStr = playStr.join("").split(" ").join("+");
+      readOut(`searching youtube for ${videoName}`);
+      let a = window.open(`https://www.youtube.com/search?q=${playStr}`
+      );
+      windowsB.push(a)
+    }
+  
+  
+    // instagram
+    if (transcript.includes("open instagram")) {
+      readOut("opening instagram sir");
+      let a =window.open("https://www.instagram.com");
+      windowsB.push(a)
+    }
+    if (transcript.includes("open my instagram profile")) {
+      if (JSON.parse(userData).instagram) {
+        readOut("opening your instagram profile");
+        let a =window.open(
+          `https://www.instagram.com/${JSON.parse(userData).instagram}/`
+        );
+        windowsB.push(a)
+      } else {
+        readOut("sir i didn't found your instagram information");
+      }
+    }
+    // twitter
+    if (transcript.includes("open my twitter profile")) {
+      readOut("opening your twitter profile");
+      let a=window.open(`https://twitter.com/${JSON.parse(userData).twitter}`);
+      windowsB.push(a)
+    }
+    if (transcript.includes("open twitter")) {
+      readOut("opening twitter sir");
+      let a = window.open(`https://twitter.com/`);
+      windowsB.push(a)
+    }
+  
+    // github
+    if (transcript.includes("open my github profile")) {
+      readOut("opening your github profile");
       let a = window.open(`https://github.com/${JSON.parse(userData).github}`);
-      windowsB.push(a);
-    } else {
-      readOut("Sir, I don't have your GitHub information. Please update your profile first.");
+      windowsB.push(a)
     }
-  }
-  
-  // Close all tabs
-  if (transcript.includes("close all tabs")) {
-    if (windowsB.length > 0) {
-      readOut(`Closing all ${windowsB.length} opened tabs sir`);
+    if (transcript.includes("open github")) {
+      readOut("opening github");
+      let a = window.open("https://github.com/");
+      windowsB.push(a)
+    }
+    // calendar
+    if (transcript.includes("open calendar")) {
+      readOut("opening calendar");
+      let a = window.open("https://calendar.google.com/");
+      windowsB.push(a)
+    }
+    // close all opened tabs
+    if (transcript.includes("close all tabs")) {
+      readOut("closing all tabs sir")
       windowsB.forEach((e) => {
-        try {
-          e.close();
-        } catch (err) {
-          console.error("Error closing window:", err);
-        }
-      });
-      windowsB = [];
-    } else {
-      readOut("Sir, there are no tabs to close");
+        e.close()
+      })
+  
+    }
+  
+    // news commands
+    if (transcript.includes("top headlines")) {
+      readOut("These are today's top headlines sir")
+      getNews()
+  
+    }
+  
+    if (transcript.includes("news regarding")) {
+      // readOut("These are today's top headlines sir")
+      let input = transcript
+      let a = input.indexOf("regarding")
+      input = input.split("")
+      input.splice(0,a+9)
+      input.shift()
+      input.pop()
+  
+      readOut(`here's some headlines on ${input.join("")}`)
+      getCategoryNews(input.join(""))
+  
+    }
+  }    
+
+  if(localStorage.getItem("lang") === "hi-IN"){
+    if(transcript.includes("हैलो जार्विस")){
+      readOutHindi("हैलो सर")
+    }
+
+    if(transcript.includes("इंग्लिश में बदलो")){
+      readOutHindi("इंग्लिश में बदल रहा हूँ")
+      speech_lang = "en-US"
+      localStorage.setItem("lang", "en-US")
+      stopingR = true
+      recognition.stop()
+      location.reload()
+      readOut("ready to go sir")
     }
   }
-  
-  // News commands - Enhanced with error handling
-  if (transcript.includes("top headlines") || transcript.includes("today's news")) {
-    readOut("Fetching today's top headlines sir");
-    getNews("top-headlines");
-  }
-  
-  if (transcript.includes("news regarding")) {
-    let topic = transcript.split("regarding")[1].trim();
-    if (topic) {
-      readOut(`Fetching news about ${topic}`);
-      getNews("everything", topic);
-    } else {
-      readOut("Sir, what topic would you like news about?");
-    }
-  }
-  
-  // Jokes
-  if (transcript.includes("tell me a joke") || transcript.includes("say something funny")) {
-    tellJoke();
-  }
-  
-  // Reminders
-  if (transcript.includes("set a reminder")) {
-    setReminder(transcript);
-  }
-  
-  // List reminders
-  if (transcript.includes("list reminders") || transcript.includes("show reminders")) {
-    listReminders();
-  }
+
+
 }
 
-function processHindiCommands(transcript) {
-  if (transcript.includes("हैलो जार्विस") || transcript.includes("नमस्ते जार्विस")) {
-    readOutHindi("हैलो सर, मैं आपकी क्या मदद कर सकता हूँ?");
-  }
-  
-  if (transcript.includes("इंग्लिश में बदलो") || transcript.includes("अंग्रेजी में बोलो")) {
-    readOutHindi("मैं अंग्रेजी में बदल रहा हूँ");
-    localStorage.setItem("lang", "en-US");
-    stopingR = true;
-    recognition.stop();
-    location.reload();
-  }
-  
-  if (transcript.includes("समय बताओ") || transcript.includes("क्या टाइम हुआ है")) {
-    readOutHindi(`सर, अभी समय है ${currentTime}`);
-  }
-  
-  if (transcript.includes("बैटरी स्टेटस") || transcript.includes("बैटरी कितनी है")) {
-    readOutHindi(`सर, बैटरी ${charge} प्रतिशत है और डिवाइस ${chargeStatus === "plugged in" ? "चार्ज हो रहा है" : "चार्ज नहीं हो रहा है"}`);
-  }
-  
-  if (transcript.includes("इंटरनेट स्टेटस") || transcript.includes("नेट चल रहा है")) {
-    readOutHindi(`सर, आप अभी ${connectivity === "online" ? "ऑनलाइन" : "ऑफलाइन"} हैं`);
-  }
-  
-  if (transcript.includes("मौसम बताओ") && localStorage.getItem("jarvis_setup")) {
-    readOutHindi(weatherStatement.replace("Sir", "सर"));
-  }
-}
+
+
 
 recognition.onend = function () {
   if (stopingR === false) {
@@ -554,279 +574,131 @@ recognition.onend = function () {
     }, 500);
   } else if (stopingR === true) {
     recognition.stop();
-    document.querySelector("#stop_jarvis_btn").style.display = "none";
+    document.querySelector("#stop_jarvis_btn").style.display = "none"
   }
 };
 
-// Enhanced speech synthesis
+// speak out
+
+
+
 function readOut(message) {
-  if (speechSynthesis.speaking) {
-    speechSynthesis.cancel();
-  }
-  
   const speech = new SpeechSynthesisUtterance();
   speech.text = message;
   speech.volume = 1;
-  speech.rate = 1;
-  speech.pitch = 1;
-  speech.lang = "en-US";
-  
-  // Try to find a pleasant voice
-  const voices = speechSynthesis.getVoices();
-  const preferredVoices = voices.filter(voice => 
-    voice.name.includes("Google") || voice.name.includes("Microsoft") || voice.lang.includes("en-US")
-  );
-  
-  if (preferredVoices.length > 0) {
-    speech.voice = preferredVoices[0];
-  }
-  
   window.speechSynthesis.speak(speech);
-  console.log("Speaking:", message);
+  console.log("Speaking out");
+  // createMsg("jmsg", message);
 }
+
 
 function readOutHindi(message) {
-  if (speechSynthesis.speaking) {
-    speechSynthesis.cancel();
-  }
   
   const speech = new SpeechSynthesisUtterance();
   speech.text = message;
   speech.volume = 1;
-  speech.rate = 0.9;
-  speech.pitch = 1;
-  speech.lang = "hi-IN";
-  
-  const voices = speechSynthesis.getVoices();
-  const hindiVoices = voices.filter(voice => voice.lang.includes("hi"));
-  
-  if (hindiVoices.length > 0) {
-    speech.voice = hindiVoices[0];
-  }
-  
+  speech.lang = "hi-IN"
   window.speechSynthesis.speak(speech);
-  console.log("Speaking (Hindi):", message);
+  console.log("Speaking out");
+  // createMsg("jmsg", message);
 }
 
-// Load voices when they become available
-speechSynthesis.onvoiceschanged = function() {
-  console.log("Voices loaded");
-};
 
-// Enhanced news functionality
-async function getNews(type = "top-headlines", query = "") {
-  try {
-    let url;
-    
-    if (type === "top-headlines") {
-      url = `https://newsapi.org/v2/top-headlines?country=in&apiKey=${NEWS_API_KEY}`;
-    } else {
-      url = `https://newsapi.org/v2/everything?q=${encodeURIComponent(query)}&sortBy=popularity&apiKey=${NEWS_API_KEY}`;
-    }
-    
-    const response = await fetch(url);
-    
-    if (!response.ok) {
-      throw new Error(`News API error: ${response.status}`);
-    }
-    
-    const data = await response.json();
-    
-    if (data.articles && data.articles.length > 0) {
-      let newsItems = data.articles.slice(0, 5); // Limit to 5 news items
-      let newsText = type === "top-headlines" ? 
-        "Here are today's top headlines sir: " : 
-        `Here are some news about ${query} sir: `;
-      
-      newsItems.forEach((item, index) => {
-        newsText += ` ${index + 1}. ${item.title}. `;
-      });
-      
-      readOut(newsText);
-      
-      // Show news in UI if needed
-      displayNewsInUI(newsItems);
-    } else {
-      readOut("Sir, I couldn't find any news on that topic.");
-    }
-  } catch (error) {
-    console.error("News fetch error:", error);
-    readOut("Sir, I'm having trouble fetching the news right now. Please try again later.");
-  }
-}
 
-function displayNewsInUI(newsItems) {
-  const newsContainer = document.querySelector(".news-container");
-  if (!newsContainer) return;
-  
-  newsContainer.innerHTML = "";
-  newsItems.forEach(item => {
-    const newsItem = document.createElement("div");
-    newsItem.className = "news-item";
-    newsItem.innerHTML = `
-      <h3>${item.title}</h3>
-      <p>${item.description || ""}</p>
-      <a href="${item.url}" target="_blank">Read more</a>
-    `;
-    newsContainer.appendChild(newsItem);
-  });
-}
 
-// Joke functionality
-async function tellJoke() {
-  try {
-    const response = await fetch("https://v2.jokeapi.dev/joke/Any?safe-mode");
-    const data = await response.json();
-    
-    if (data.setup && data.delivery) {
-      // Two-part joke
-      readOut(data.setup);
-      setTimeout(() => {
-        readOut(data.delivery);
-      }, 3000);
-    } else if (data.joke) {
-      // Single joke
-      readOut(data.joke);
-    } else {
-      readOut("Why don't scientists trust atoms? Because they make up everything!");
-    }
-  } catch (error) {
-    console.error("Joke API error:", error);
-    readOut("Why did the computer go to therapy? It had too many bytes of emotional baggage!");
-  }
-}
 
-// Reminder functionality
-function setReminder(transcript) {
-  // Extract time and message from transcript
-  // This is a simplified version - you'd want to implement proper NLP for this
-  let timeMatch = transcript.match(/(\d+):(\d+)\s*(am|pm)?/i);
-  let message = transcript.replace("set a reminder", "")
-                         .replace(/(for|at)\s+\d+:\d+\s*(am|pm)?/i, "")
-                         .trim();
-  
-  if (timeMatch) {
-    let hours = parseInt(timeMatch[1]);
-    let minutes = parseInt(timeMatch[2]);
-    let period = timeMatch[3] ? timeMatch[3].toLowerCase() : "";
-    
-    // Convert to 24-hour format
-    if (period === "pm" && hours < 12) hours += 12;
-    if (period === "am" && hours === 12) hours = 0;
-    
-    // Create reminder object
-    let reminder = {
-      time: { hours, minutes },
-      message: message || "Reminder",
-      id: Date.now()
-    };
-    
-    reminders.push(reminder);
-    saveReminders();
-    
-    readOut(`Reminder set for ${hours % 12 || 12}:${minutes.toString().padStart(2, '0')} ${hours >= 12 ? 'PM' : 'AM'}. I'll remind you: ${message}`);
-  } else {
-    readOut("Sir, please specify a time for the reminder. For example: 'set a reminder at 3:30 PM to take a break'");
-  }
-}
+// small jarvis
+const smallJarvis = document.querySelector("#small_jarvis")
 
-function checkReminders() {
-  const now = new Date();
-  const currentHours = now.getHours();
-  const currentMinutes = now.getMinutes();
-  
-  reminders.forEach((reminder, index) => {
-    if (reminder.time.hours === currentHours && 
-        reminder.time.minutes === currentMinutes) {
-      readOut(`Sir, reminder: ${reminder.message}`);
-      
-      // Remove the reminder after triggering
-      reminders.splice(index, 1);
-      saveReminders();
-    }
-  });
-}
 
-function listReminders() {
-  if (reminders.length === 0) {
-    readOut("Sir, you have no reminders set.");
-    return;
-  }
-  
-  let reminderText = "Sir, here are your reminders: ";
-  reminders.forEach((reminder, index) => {
-    const hours = reminder.time.hours;
-    const ampm = hours >= 12 ? 'PM' : 'AM';
-    const displayHours = hours % 12 || 12;
-    reminderText += `${index + 1}. At ${displayHours}:${reminder.time.minutes.toString().padStart(2, '0')} ${ampm}: ${reminder.message}. `;
-  });
-  
-  readOut(reminderText);
-}
 
-function saveReminders() {
-  localStorage.setItem("jarvis_reminders", JSON.stringify(reminders));
-}
-
-function loadReminders() {
-  const savedReminders = localStorage.getItem("jarvis_reminders");
-  if (savedReminders) {
-    reminders = JSON.parse(savedReminders);
-  }
-}
-
-// Small JARVIS window control
-const smallJarvis = document.querySelector("#small_jarvis");
 smallJarvis.addEventListener("click", () => {
-  window.open(`${window.location.href}`, "newWindow", "menubar=true,location=true,resizable=false,scrollbars=false,width=200,height=200,top=0,left=0");
-  window.close();
-});
+  window.open(`${window.location.href}`,"newWindow","menubar=true,location=true,resizable=false,scrollbars=false,width=200,height=200,top=0,left=0")
+  window.close()
+})
 
-// Calendar display
+
+
+document.querySelector("#jarvis_start").addEventListener("click", () => {
+  recognition.start()
+})
+
+// calendar
+
 const lang = navigator.language;
-let datex = new Date();
-let dayNumber = date.getDate();
-let monthx = date.getMonth();
-let dayName = date.toLocaleString(lang, { weekday: 'long' });
-let monthName = date.toLocaleString(lang, { month: 'long' });
-let year = date.getFullYear();
 
-document.querySelector("#month").innerHTML = monthName;
-document.querySelector("#day").innerHTML = dayName;
-document.querySelector("#date").innerHTML = dayNumber;
-document.querySelector("#year").innerHTML = year;
+let datex = new Date();
+let dayNumber 	= date.getDate();
+let monthx 		= date.getMonth();
+
+let dayName 	= date.toLocaleString(lang, {weekday: 'long'});
+let monthName 	= date.toLocaleString(lang, {month: 'long'});
+let year 		= date.getFullYear();
+
+document.querySelector("#month").innerHTML = monthName
+document.querySelector("#day").innerHTML = dayName
+document.querySelector("#date").innerHTML = dayNumber
+document.querySelector("#year").innerHTML = year
 
 document.querySelector(".calendar").addEventListener("click", () => {
-  window.open("https://calendar.google.com/");
-});
+  window.open("https://calendar.google.com/")
+})
 
-// Start/stop buttons
-document.querySelector("#start_jarvis_btn").addEventListener("click", () => {
-  readOut("Activating voice recognition sir");
-  recognition.start();
-});
 
-document.querySelector("#stop_jarvis_btn").addEventListener("click", () => {
-  readOut("Deactivating voice recognition sir");
-  stopingR = true;
-  recognition.stop();
-});
+// news setup
 
-// Initialize with a greeting if no setup is needed
-if (localStorage.getItem("jarvis_setup")) {
-  setTimeout(() => {
-    const now = new Date();
-    const hours = now.getHours();
-    
-    let greeting;
-    if (hours < 12) {
-      greeting = "Good morning";
-    } else if (hours < 18) {
-      greeting = "Good afternoon";
-    } else {
-      greeting = "Good evening";
-    }
-    
-    readOut(`${greeting} sir. How may I assist you today?`);
-  }, 1000);
+async function getNews(){
+  var url = "https://newsapi.org/v2/top-headlines?country=in&apiKey=b0712dc2e5814a1bb531e6f096b3d7d3"
+  var req = new Request(url)
+  await fetch(req).then((response) => response.json())
+  .then((data) => {
+    console.log(data);
+    let arrNews = data.articles
+    arrNews.length = 10
+    let a = []
+    arrNews.forEach((e,index) => {
+      a.push(index+1)
+      a.push(".........")
+      a.push(e.title)
+      a.push(".........")
+
+    });
+    readOut(a)
+  })
 }
+
+// category news
+
+let yyyy,mm,dd
+
+dd = date.getDate()
+mm = date.getMonth()
+yyyy = date.getFullYear()
+
+async function getCategoryNews(category){
+  var url =
+    "https://newsapi.org/v2/everything?" +
+    `q=${category}&` +
+    `from=${yyyy}-${mm}-${dd}&` +
+    "sortBy=popularity&" +
+    "apiKey=b0712dc2e5814a1bb531e6f096b3d7d3";
+
+    // https://newsapi.org/v2/everything?q=Apple&from=2021-09-19&sortBy=popularity&apiKey=API_KEY
+
+    var req = new Request(url)
+
+  await fetch(req).then((response) => response.json())
+  .then((data) => {
+    console.log(data);
+    let arrNews = data.articles
+    arrNews.length = 10
+    let a = []
+    arrNews.forEach((e,index) => {
+      a.push(index+1)
+      a.push(".........")
+      a.push(e.title)
+      a.push(".........")
+    });
+    readOut(a)
+  })
+} 
